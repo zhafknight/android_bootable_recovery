@@ -1909,6 +1909,7 @@ int GUIAction::checkforapp(std::string arg __unused)
 				goto exit;
 			}
 		}
+/*
 		if (PartitionManager.Mount_By_Path("/data", false)) {
 			const char parent_path[] = "/data/app";
 			const char app_prefix[] = "me.twrp.twrpapp-";
@@ -1929,6 +1930,7 @@ int GUIAction::checkforapp(std::string arg __unused)
 			LOGINFO("Data partition cannot be mounted during app check\n");
 			DataManager::SetValue("tw_app_install_status", 2); // 0 = no status, 1 = not installed, 2 = already installed or do not install
 		}
+*/
 	} else
 		simulate_progress_bar();
 	LOGINFO("App not installed\n");
