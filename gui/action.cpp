@@ -1915,6 +1915,7 @@ int GUIAction::checkforapp(std::string arg __unused)
 				goto exit;
 			}
 		}
+/*
 		if (PartitionManager.Mount_By_Path("/data", false)) {
 			string parent_path = "/data/app";
 			DIR *d = opendir("/data/app");
@@ -1932,6 +1933,7 @@ int GUIAction::checkforapp(std::string arg __unused)
 			}
 			closedir(d);
 		}
+*/
 	} else
 		simulate_progress_bar();
 	LOGINFO("App not installed\n");
