@@ -1,3 +1,4 @@
+
 /*
 	Copyright 2013 to 2016 TeamWin
 	This file is part of TWRP/TeamWin Recovery Project.
@@ -202,6 +203,7 @@ TWPartition::TWPartition() {
 	Used = 0;
 	Free = 0;
 	Backup_Size = 0;
+	Backup_Media_Size = 0;
 	Can_Be_Encrypted = false;
 	Is_Encrypted = false;
 	Is_Decrypted = false;
@@ -2189,7 +2191,11 @@ bool TWPartition::Backup_Tar(PartitionSettings *part_settings, pid_t *tar_fork_p
 		return false;
 
 	TWFunc::GUI_Operation_Text(TW_BACKUP_TEXT, Backup_Display_Name, "Backing Up");
-	gui_msg(Msg("backing_up=Backing up {1}...")(Backup_Display_Name));
+	if (Has_Data_Media && part_settings->backup_media) {
+		gui_msg(Msg("backing_up_including_media=Backing up {1} including media...")(Backup_Display_Name));
+        } else {
+		gui_msg(Msg("backing_up=Backing up {1}...")(Backup_Display_Name));
+	}
 
 	DataManager::GetValue(TW_USE_COMPRESSION_VAR, tar.use_compression);
 
@@ -2214,6 +2220,9 @@ bool TWPartition::Backup_Tar(PartitionSettings *part_settings, pid_t *tar_fork_p
 		gui_msg(Msg(msg::kWarning, "backup_storage_warning=Backups of {1} do not include any files in internal storage such as pictures or downloads.")(Display_Name));
 	tar.part_settings = part_settings;
 	tar.backup_exclusions = &backup_exclusions;
+	if (Has_Data_Media && part_settings->backup_media) {
+		tar.backup_exclusions = &no_exclusions;
+        }
 	tar.setdir(Backup_Path);
 	tar.setfn(Full_FileName);
 	tar.setsize(Backup_Size);
@@ -2427,9 +2436,14 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 	} else {
 		gui_msg(Msg("wiping=Wiping {1}")(Backup_Display_Name));
 		if (Has_Data_Media && Mount_Point == "/data" && Restore_File_System != Current_File_System) {
-			gui_msg(Msg(msg::kWarning, "datamedia_fs_restore=WARNING: This /data backup was made with {1} file system! The backup may not boot unless you change back to {1}.")(Restore_File_System));
-			if (!Wipe_Data_Without_Wiping_Media())
-				return false;
+			if (Has_Data_Media && part_settings->restore_media) {
+				if (!Wipe(Restore_File_System))
+					return false;
+			} else {
+				gui_msg(Msg(msg::kWarning, "datamedia_fs_restore=WARNING: This /data backup was made with {1} file system! The backup may not boot unless you change back to {1}.")(Restore_File_System));
+				if (!Wipe_Data_Without_Wiping_Media())
+					return false;
+                        }
 		} else {
 			if (!Wipe(Restore_File_System))
 				return false;
@@ -2548,9 +2562,12 @@ bool TWPartition::Update_Size(bool Display_Error) {
 		if (Mount(Display_Error)) {
 			Used = backup_exclusions.Get_Folder_Size(Mount_Point);
 			Backup_Size = Used;
+                        unsigned long long full_Size = no_exclusions.Get_Folder_Size(Mount_Point);
+                        Backup_Media_Size = full_Size - Used;
 			int bak = (int)(Used / 1048576LLU);
+			int bakmedia = (int)(Backup_Media_Size / 1048576LLU);
 			int fre = (int)(Free / 1048576LLU);
-			LOGINFO("Data backup size is %iMB, free: %iMB.\n", bak, fre);
+			LOGINFO("Data backup size is %iMB (/data), %iMB (/data/media), free: %iMB.\n", bak, bakmedia, fre);
 		} else {
 			if (!Was_Already_Mounted)
 				UnMount(false);

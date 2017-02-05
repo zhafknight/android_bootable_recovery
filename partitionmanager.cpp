@@ -695,7 +695,7 @@ int TWPartitionManager::Cancel_Backup() {
 	return 0;
 }
 
-int TWPartitionManager::Run_Backup(bool adbbackup) {
+int TWPartitionManager::Run_Backup(bool adbbackup, bool backup_media) {
 	PartitionSettings part_settings;
 	int partition_count = 0, disable_free_space_check = 0, do_md5 = 0;
 	int gui_adb_backup;
@@ -725,10 +725,13 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 	part_settings.adbbackup = adbbackup;
 	time(&total_start);
 
+        part_settings.backup_media = backup_media; 
+
 	Update_System_Details();
 
 	if (!Mount_Current_Storage(true))
 		return false;
+
 
 	DataManager::GetValue(TW_SKIP_MD5_GENERATE_VAR, do_md5);
 	if (do_md5 == 0)
@@ -759,10 +762,15 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 			part_settings.Part = Find_Partition_By_Path(backup_path);
 			if (part_settings.Part != NULL) {
 				partition_count++;
-				if (part_settings.Part->Backup_Method == BM_FILES)
-					part_settings.file_bytes += part_settings.Part->Backup_Size;
-				else
-					part_settings.img_bytes += part_settings.Part->Backup_Size;
+				unsigned long long Total_Backup_Size = part_settings.Part->Backup_Size;
+				if (part_settings.backup_media) {
+					 Total_Backup_Size += part_settings.Part->Backup_Media_Size;
+				}
+				if (part_settings.Part->Backup_Method == BM_FILES) {
+					part_settings.file_bytes += Total_Backup_Size;
+				} else {
+					part_settings.img_bytes += Total_Backup_Size;
+				}
 				if (part_settings.Part->Has_SubPartition) {
 					std::vector<TWPartition*>::iterator subpart;
 
@@ -945,10 +953,10 @@ bool TWPartitionManager::Restore_Partition(PartitionSettings *part_settings) {
 	return true;
 }
 
-int TWPartitionManager::Run_Restore(const string& Restore_Name) {
+int TWPartitionManager::Run_Restore(const string& Restore_Name, bool restore_media) {
 	PartitionSettings part_settings;
 	int check_md5;
-
+       
 	time_t rStart, rStop;
 	time(&rStart);
 	string Restore_List, restore_path;
@@ -967,6 +975,8 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 	if (!Mount_Current_Storage(true))
 		return false;
 
+	part_settings.restore_media = restore_media; 
+        
 	DataManager::GetValue(TW_SKIP_MD5_CHECK_VAR, check_md5);
 	if (check_md5 > 0) {
 		// Check MD5 files first before restoring to ensure that all of them match before starting a restore
@@ -1967,10 +1977,12 @@ void TWPartitionManager::Get_Partition_List(string ListType, std::vector<Partiti
 	} else if (ListType == "backup") {
 		char backup_size[255];
 		unsigned long long Backup_Size;
+		unsigned long long Backup_Media_Size;
 		for (iter = Partitions.begin(); iter != Partitions.end(); iter++) {
 			if ((*iter)->Can_Be_Backed_Up && !(*iter)->Is_SubPartition && (*iter)->Is_Present) {
 				struct PartitionList part;
 				Backup_Size = (*iter)->Backup_Size;
+				Backup_Media_Size = (*iter)->Backup_Media_Size;
 				if ((*iter)->Has_SubPartition) {
 					std::vector<TWPartition*>::iterator subpart;
 
@@ -1982,6 +1994,11 @@ void TWPartitionManager::Get_Partition_List(string ListType, std::vector<Partiti
 				sprintf(backup_size, "%llu", Backup_Size / 1024 / 1024);
 				part.Display_Name = (*iter)->Backup_Display_Name + " (";
 				part.Display_Name += backup_size;
+				if (Backup_Media_Size > 0) {
+					sprintf(backup_size, "%llu", Backup_Media_Size / 1024 / 1024);
+					part.Display_Name += "MB Media:";
+	 				part.Display_Name += backup_size;
+				}
 				part.Display_Name += "MB)";
 				part.Mount_Point = (*iter)->Backup_Path;
 				part.selected = 0;

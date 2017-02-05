@@ -1188,10 +1188,12 @@ int GUIAction::nandroid(std::string arg)
 
 		if (arg == "backup") {
 			string Backup_Name;
+			int backup_media = 0;
 			DataManager::GetValue(TW_BACKUP_NAME, Backup_Name);
+			DataManager::GetValue(TW_BACKUP_MEDIA_VAR, backup_media);
 			string auto_gen = gui_lookup("auto_generate", "(Auto Generate)");
 			if (Backup_Name == auto_gen || Backup_Name == gui_lookup("curr_date", "(Current Date)") || Backup_Name == "0" || Backup_Name == "(" || PartitionManager.Check_Backup_Name(true) == 0) {
-				ret = PartitionManager.Run_Backup(false);
+				ret = PartitionManager.Run_Backup(false, backup_media != 0);
 			} else {
 				operation_end(1);
 				return -1;
@@ -1199,8 +1201,10 @@ int GUIAction::nandroid(std::string arg)
 			DataManager::SetValue(TW_BACKUP_NAME, auto_gen);
 		} else if (arg == "restore") {
 			string Restore_Name;
+			int restore_media = 0;
 			DataManager::GetValue("tw_restore", Restore_Name);
-			ret = PartitionManager.Run_Restore(Restore_Name);
+			DataManager::GetValue(TW_RESTORE_MEDIA_VAR, restore_media);
+			ret = PartitionManager.Run_Restore(Restore_Name, restore_media != 0);
 		} else {
 			operation_end(1);
 			return -1;

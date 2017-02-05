@@ -2025,6 +2025,9 @@
 				<listitem name="{@enable_backup_comp_chk=Enable compression}">
 					<data variable="tw_use_compression"/>
 				</listitem>
+				<listitem name="{@backup_media=Backup /data/media}">
+					<data variable="tw_backup_media"/>
+				</listitem>
 				<listitem name="{@skip_md5_backup_chk=Skip MD5 generation during backup}">
 					<data variable="tw_skip_md5_generate"/>
 				</listitem>
@@ -2810,6 +2813,12 @@
 				<listitem name="{@restore_enable_md5_chk=Enable MD5 Verification of Backup Files}">
 					<data variable="tw_skip_md5_check"/>
 				</listitem>
+				<listitem name="{@restore_media=Restore /data/media}">
+					<data variable="tw_restore_media"/>
+				</listitem>
+			</checkbox>
+
+
 			</listbox>
 
 			<button>
@@ -3598,6 +3607,12 @@
 				<listitem name="{@simfail_chk=Simulate failure for actions}">
 					<data variable="tw_simulate_fail"/>
 					<condition var1="tw_simulate_actions" var2="1"/>
+				</listitem>
+				<listitem name="{@restore_media=Restore including /data/media}">
+					<data variable="tw_restore_media"/>
+				</listitem>
+				<listitem name="{@backup_media=Backup including /data/media}">
+					<data variable="tw_backup_media"/>
 				</listitem>
 			</listbox>
 

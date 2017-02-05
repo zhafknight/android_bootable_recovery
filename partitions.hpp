@@ -58,6 +58,8 @@ struct PartitionSettings {                                                      
 	int partition_count;                                                      // Number of partitions to restore
 	ProgressTracking *progress;                                               // Keep track of progress in GUI
 	enum PartitionManager_Op PM_Method;                                       // Current operation of backup or restore
+	bool backup_media;                                                        // Indicates to backup /data/media also
+	bool restore_media;                                                       // Indicates to restore /data/media also
 };
 
 enum Backup_Method_enum {
@@ -191,6 +193,7 @@ private:
 	unsigned long long Used;                                                  // Overall used space
 	unsigned long long Free;                                                  // Overall free space
 	unsigned long long Backup_Size;                                           // Backup size -- may be different than used space especially when /data/media is present
+	unsigned long long Backup_Media_Size;                                     // Backup size of /data/media if present
 	unsigned long long Restore_Size;                                          // Restore size of the current restore operation
 	bool Can_Be_Encrypted;                                                    // This partition might be encrypted, affects error handling, can only be true if crypto support is compiled in
 	bool Is_Encrypted;                                                        // This partition is thought to be encrypted -- it wouldn't mount for some reason, only avialble with crypto support
@@ -220,6 +223,7 @@ private:
 	bool SlotSelect;                                                          // Partition has A/B slots
 	TWExclude backup_exclusions;                                              // Exclusions for file based backups
 	TWExclude wipe_exclusions;                                                // Exclusions for file based wipes (data/media devices only)
+	TWExclude no_exclusions;                                                  // No exclusion
 
 friend class TWPartitionManager;
 friend class DataManager;
@@ -245,8 +249,8 @@ public:
 	int Mount_Settings_Storage(bool Display_Error);                           // Mounts the settings file storage location (usually internal)
 	TWPartition* Find_Partition_By_Path(string Path);                         // Returns a pointer to a partition based on path
 	int Check_Backup_Name(bool Display_Error);                                // Checks the current backup name to ensure that it is valid
-	int Run_Backup(bool adbbackup);                                           // Initiates a backup in the current storage
-	int Run_Restore(const string& Restore_Name);                              // Restores a backup
+	int Run_Backup(bool adbbackup, bool backup_media);                        // Initiates a backup in the current storage
+	int Run_Restore(const string& Restore_Name, bool restore_media);          // Restores a backup
 	bool Write_ADB_Stream_Header(uint64_t partition_count);                   // Write ADB header over twrpbu FIFO
 	bool Write_ADB_Stream_Trailer();                                          // Write ADB trailer over twrpbu FIFO
 	void Set_Restore_Files(string Restore_Name);                              // Used to gather a list of available backup partitions for the user to select for a restore

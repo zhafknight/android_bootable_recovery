@@ -215,6 +215,7 @@
 		<string name="enc_disabled">disabled - set a password to enable</string>
 		<string name="enc_enabled">enabled</string>
 		<string name="enable_backup_comp_chk">Enable compression</string>
+		<string name="backup_media">Backup /data/media</string>
 		<string name="skip_md5_backup_chk">Skip MD5 generation during backup</string>
 		<string name="disable_backup_space_chk" version="2">Disable free space check before backup</string>
 		<string name="current_boot_slot">Current Slot: %tw_active_slot%</string>
@@ -254,6 +255,7 @@
 		<string name="restore_backup_date">Backup made on %tw_restore_file_date%</string>
 		<string name="restore_sel_part">Select Partitions to Restore:</string>
 		<string name="restore_enable_md5_chk">Enable MD5 Verification of Backup Files</string>
+		<string name="restore_media">Restore /data/media</string>
 		<string name="restore_complete">Restore Complete</string>
 		<string name="swipe_restore">Swipe to Restore</string>
 		<string name="swipe_restore_s">   Restore</string>
@@ -597,6 +599,7 @@
 		<string name="remove_all">Removing all files under '{1}'</string>
 		<string name="wiping_data">Wiping data without wiping /data/media ...</string>
 		<string name="backing_up">Backing up {1}...</string>
+		<string name="backing_up_including_media">Backing up {1} including media...</string>
 		<string name="backup_storage_warning">Backups of {1} do not include any files in internal storage such as pictures or downloads.</string>
 		<string name="backing">Backing Up</string>
 		<string name="backup_size">Backup file size for '{1}' is 0 bytes.</string>
