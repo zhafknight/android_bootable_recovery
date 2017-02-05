@@ -2782,6 +2782,12 @@
 					<condition var1="tw_simulate_actions" var2="1"/>
 					<data variable="tw_simulate_fail"/>
 				</listitem>
+				<listitem name="{@restore_media=Restore including /data/media}">
+					<data variable="tw_restore_media"/>
+				</listitem>
+				<listitem name="{@backup_media=Backup including /data/media}">
+					<data variable="tw_backup_media"/>
+				</listitem>
 			</listbox>
 
 			<checkbox>

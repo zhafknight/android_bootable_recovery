@@ -17,7 +17,7 @@
 #ifndef _VARIABLES_HEADER_
 #define _VARIABLES_HEADER_
 
-#define TW_MAIN_VERSION_STR       "3.0.3_EMU"
+#define TW_MAIN_VERSION_STR       "3.0.3_EMU1"
 #define TW_VERSION_STR TW_MAIN_VERSION_STR TW_DEVICE_VERSION
 
 #define TW_USE_COMPRESSION_VAR      "tw_use_compression"
@@ -70,6 +70,10 @@
 #define TW_ZIP_EXTERNAL_VAR         "tw_zip_external"
 #define TW_FORCE_MD5_CHECK_VAR      "tw_force_md5_check"
 #define TW_SKIP_MD5_CHECK_VAR       "tw_skip_md5_check"
+#define TW_RESTORE_MEDIA_VAR        "tw_restore_media"
+#define TW_BACKUP_MEDIA_VAR         "tw_backup_media"
+
+
 #define TW_SKIP_MD5_GENERATE_VAR    "tw_skip_md5_generate"
 #define TW_DISABLE_FREE_SPACE_VAR   "tw_disable_free_space"
 #define TW_SIGNED_ZIP_VERIFY_VAR    "tw_signed_zip_verify"

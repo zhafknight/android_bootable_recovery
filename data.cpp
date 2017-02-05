@@ -686,6 +686,8 @@ void DataManager::SetDefaultValues()
 	mPersist.SetValue(TW_GUI_SORT_ORDER, "1");
 	mPersist.SetValue(TW_RM_RF_VAR, "0");
 	mPersist.SetValue(TW_SKIP_MD5_CHECK_VAR, "0");
+	mPersist.SetValue(TW_RESTORE_MEDIA_VAR, "0");
+	mPersist.SetValue(TW_BACKUP_MEDIA_VAR, "0");
 	mPersist.SetValue(TW_SKIP_MD5_GENERATE_VAR, "0");
 	mPersist.SetValue(TW_SDEXT_SIZE, "0");
 	mPersist.SetValue(TW_SWAP_SIZE, "0");

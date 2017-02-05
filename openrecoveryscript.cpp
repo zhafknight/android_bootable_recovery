@@ -289,7 +289,7 @@ int OpenRecoveryScript::run_script_file(void) {
 				if (is_encrypted) {
 					gui_err("ors_encrypt_restore_err=Unable to use OpenRecoveryScript to restore an encrypted backup.");
 					ret_val = 1;
-				} else if (!PartitionManager.Run_Restore(folder_path))
+				} else if (!PartitionManager.Run_Restore(folder_path, false))
 					ret_val = 1;
 				else
 					gui_msg("done=Done.");
@@ -565,7 +565,7 @@ int OpenRecoveryScript::Backup_ADB_Command(std::string Options) {
 	else
 		DataManager::SetValue("tw_backup_list", Backup_List);
 
-	ret = PartitionManager.Run_Backup(adbbackup);
+	ret = PartitionManager.Run_Backup(adbbackup, false);
 	DataManager::SetValue(TW_BACKUP_NAME, gui_lookup("auto_generate", "(Auto Generate)"));
 	if (!ret) {
 		gui_err("backup_fail=Backup failed");
@@ -649,7 +649,7 @@ int OpenRecoveryScript::Backup_Command(string Options) {
 		}
 	}
 	DataManager::SetValue("tw_backup_list", Backup_List);
-	if (!PartitionManager.Run_Backup(false)) {
+	if (!PartitionManager.Run_Backup(false, false)) {
 		gui_err("backup_fail=Backup Failed");
 		return 1;
 	}
