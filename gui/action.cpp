@@ -1202,9 +1202,11 @@ int GUIAction::nandroid(std::string arg)
 		} else if (arg == "restore") {
 			string Restore_Name;
 			int restore_media = 0;
+			int migrate_media = 0;
 			DataManager::GetValue("tw_restore", Restore_Name);
 			DataManager::GetValue(TW_RESTORE_MEDIA_VAR, restore_media);
-			ret = PartitionManager.Run_Restore(Restore_Name, restore_media != 0);
+			DataManager::GetValue(TW_MIGRATE_MEDIA_VAR, migrate_media);
+			ret = PartitionManager.Run_Restore(Restore_Name, restore_media != 0, migrate_media != 0);
 		} else {
 			operation_end(1);
 			return -1;

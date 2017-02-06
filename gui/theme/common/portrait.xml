@@ -2435,8 +2435,8 @@
 
 			<checkbox>
 				<placement x="%indent%" y="%row17_y%"/>
-				<text>{@restore_enable_md5_chk=Enable MD5 Verification of Backup Files}</text>
-				<data variable="tw_skip_md5_check"/>
+				<text>{@migrate_media=Migrate non-emulated storage}</text>
+				<data variable="tw_migrate_media"/>
 			</checkbox>
 
 			<button style="main_button_half_height">

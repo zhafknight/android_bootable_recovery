@@ -141,6 +141,7 @@ enum TW_FSTAB_FLAGS {
 	TWFLAG_USERMRF,
 	TWFLAG_WIPEDURINGFACTORYRESET,
 	TWFLAG_WIPEINGUI,
+	TWFLAG_NONEMUSTORAGE,
 	TWFLAG_SLOTSELECT,
 };
 
@@ -175,6 +176,7 @@ const struct flag_list tw_flags[] = {
 	{ "usermrf",                TWFLAG_USERMRF },
 	{ "wipeduringfactoryreset", TWFLAG_WIPEDURINGFACTORYRESET },
 	{ "wipeingui",              TWFLAG_WIPEINGUI },
+	{ "nonemustorage",          TWFLAG_NONEMUSTORAGE },
 	{ "slotselect",             TWFLAG_SLOTSELECT },
 	{ 0,                        0 },
 };
@@ -238,6 +240,7 @@ TWPartition::TWPartition() {
 	Is_Adopted_Storage = false;
 	Adopted_GUID = "";
 	SlotSelect = false;
+	Is_Non_Emu_Storage = false;
 }
 
 TWPartition::~TWPartition(void) {
@@ -719,6 +722,9 @@ void TWPartition::Apply_TW_Flag(const unsigned flag, const char* str, const bool
 			if (Wipe_Available_in_GUI)
 				Can_Be_Wiped = true;
 			break;
+		case TWFLAG_NONEMUSTORAGE:
+			Is_Non_Emu_Storage = true;
+			break;
 		case TWFLAG_SLOTSELECT:
 			SlotSelect = true;
 			break;
@@ -890,7 +896,7 @@ void TWPartition::Setup_AndSec(void) {
 void TWPartition::Setup_Data_Media() {
 	LOGINFO("Setting up '%s' as data/media emulated storage.\n", Mount_Point.c_str());
 	if (Storage_Name.empty() || Storage_Name == "Data")
-		Storage_Name = "Internal Storage";
+		Storage_Name = "Emulated Storage";
 	Has_Data_Media = true;
 	Is_Storage = true;
 	Storage_Path = Mount_Point + "/media";
@@ -1708,12 +1714,14 @@ bool TWPartition::Restore(PartitionSettings *part_settings) {
 	LOGINFO("Restore filename is: %s/%s\n", part_settings->Backup_Folder.c_str(), Backup_FileName.c_str());
 
 	string Restore_File_System = Get_Restore_File_System(part_settings);
-
-	if (Is_File_System(Restore_File_System))
+	if (Is_Non_Emu_Storage && part_settings->migrate_media) {
 		return Restore_Tar(part_settings);
-	else if (Is_Image(Restore_File_System))
-		return Restore_Image(part_settings);
-
+	} else {
+		if (Is_File_System(Restore_File_System))
+			return Restore_Tar(part_settings);
+		else if (Is_Image(Restore_File_System))
+			return Restore_Image(part_settings);
+	}
 	LOGERR("Unknown restore method for '%s'\n", Mount_Point.c_str());
 	return false;
 }
@@ -2434,19 +2442,21 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 		if (!Wipe_AndSec())
 			return false;
 	} else {
-		gui_msg(Msg("wiping=Wiping {1}")(Backup_Display_Name));
-		if (Has_Data_Media && Mount_Point == "/data" && Restore_File_System != Current_File_System) {
-			if (Has_Data_Media && part_settings->restore_media) {
+		if (!part_settings->migrate_media) {
+			gui_msg(Msg("wiping=Wiping {1}")(Backup_Display_Name));
+			if (Has_Data_Media && Mount_Point == "/data" && Restore_File_System != Current_File_System) {
+				if (Has_Data_Media && part_settings->restore_media) {
+					if (!Wipe(Restore_File_System))
+						return false;
+				} else {
+					gui_msg(Msg(msg::kWarning, "datamedia_fs_restore=WARNING: This /data backup was made with {1} file system! The backup may not boot unless you change back to {1}.")(Restore_File_System));
+					if (!Wipe_Data_Without_Wiping_Media())
+						return false;
+		                }
+			} else {
 				if (!Wipe(Restore_File_System))
 					return false;
-			} else {
-				gui_msg(Msg(msg::kWarning, "datamedia_fs_restore=WARNING: This /data backup was made with {1} file system! The backup may not boot unless you change back to {1}.")(Restore_File_System));
-				if (!Wipe_Data_Without_Wiping_Media())
-					return false;
-                        }
-		} else {
-			if (!Wipe(Restore_File_System))
-				return false;
+			}
 		}
 	}
 	TWFunc::GUI_Operation_Text(TW_RESTORE_TEXT, Backup_Display_Name, gui_parse_text("{@restoring_hdr}"));
@@ -2459,7 +2469,13 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 	Full_FileName = part_settings->Backup_Folder + "/" + Backup_FileName;
 	twrpTar tar;
 	tar.part_settings = part_settings;
-	tar.setdir(Backup_Path);
+	if (Is_Non_Emu_Storage && part_settings->migrate_media) {
+		gui_msg(Msg("migrating=Migrating {1} to /data/media/0...")(Backup_Path));
+
+		tar.setdir("/data/media/0");
+	} else {
+		tar.setdir(Backup_Path);
+	}
 	tar.setfn(Full_FileName);
 	tar.backup_name = Backup_Name;
 #ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
@@ -2473,6 +2489,10 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 		ret = false;
 	else
 		ret = true;
+	if (Is_Non_Emu_Storage && ret && part_settings->migrate_media) {
+		//Remove storage.xml so the ROM determines the storage-mode (emulated or non-emulated)
+		remove("/data/system/storage.xml");
+	}
 #ifdef HAVE_CAPABILITIES
 	// Restore capabilities to the run-as binary
 	if (Mount_Point == "/system" && Mount(true) && TWFunc::Path_Exists("/system/bin/run-as")) {

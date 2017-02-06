@@ -953,7 +953,7 @@ bool TWPartitionManager::Restore_Partition(PartitionSettings *part_settings) {
 	return true;
 }
 
-int TWPartitionManager::Run_Restore(const string& Restore_Name, bool restore_media) {
+int TWPartitionManager::Run_Restore(const string& Restore_Name, bool restore_media, bool migrate_media) {
 	PartitionSettings part_settings;
 	int check_md5;
        
@@ -976,6 +976,7 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name, bool restore_med
 		return false;
 
 	part_settings.restore_media = restore_media; 
+	part_settings.migrate_media = migrate_media;
         
 	DataManager::GetValue(TW_SKIP_MD5_CHECK_VAR, check_md5);
 	if (check_md5 > 0) {
@@ -1971,7 +1972,9 @@ void TWPartitionManager::Get_Partition_List(string ListType, std::vector<Partiti
 					part.selected = 1;
 				else
 					part.selected = 0;
-				Partition_List->push_back(part);
+				if (!(*iter)->Is_Non_Emu_Storage) {
+					Partition_List->push_back(part);
+				}
 			}
 		}
 	} else if (ListType == "backup") {
@@ -2457,6 +2460,7 @@ void TWPartitionManager::Translate_Partition_Display_Names() {
 	Translate_Partition("/vendor", "vendor", "Vendor");
 	Translate_Partition("/vendor_image", "vendor_image", "Vendor Image");
 	Translate_Partition("/cache", "cache", "Cache");
+	Translate_Partition("/data", "data", "Data", "internal", "Emulated Storage");
 	Translate_Partition("/boot", "boot", "Boot");
 	Translate_Partition("/recovery", "recovery", "Recovery");
 	if (!datamedia) {

@@ -21,7 +21,7 @@
 		<string name="data">Data</string>
 		<string name="data_backup">Data (excl. storage)</string>
 		<string name="sdcard">SDCard</string>
-		<string name="internal">Internal Storage</string>
+		<string name="internal">Emulated Storage</string>
 		<string name="microsd">Micro SDCard</string>
 		<string name="usbotg">USB OTG</string>
 		<string name="android_secure">Android Secure</string>
@@ -256,6 +256,8 @@
 		<string name="restore_sel_part">Select Partitions to Restore:</string>
 		<string name="restore_enable_md5_chk">Enable MD5 Verification of Backup Files</string>
 		<string name="restore_media">Restore /data/media</string>
+		<string name="migrate_media">Migrate non-emulated storage</string>
+		<string name="migrating">Migrating {1} to /data/media/0...</string>
 		<string name="restore_complete">Restore Complete</string>
 		<string name="swipe_restore">Swipe to Restore</string>
 		<string name="swipe_restore_s">   Restore</string>

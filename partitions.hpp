@@ -60,6 +60,7 @@ struct PartitionSettings {                                                      
 	enum PartitionManager_Op PM_Method;                                       // Current operation of backup or restore
 	bool backup_media;                                                        // Indicates to backup /data/media also
 	bool restore_media;                                                       // Indicates to restore /data/media also
+	bool migrate_media;                                                       // Indicates to restore non-emu storage to /data/media/0
 };
 
 enum Backup_Method_enum {
@@ -220,6 +221,8 @@ private:
 	bool Can_Flash_Img;                                                       // Indicates if this partition can have images flashed to it via the GUI
 	bool Mount_Read_Only;                                                     // Only mount this partition as read-only
 	bool Is_Adopted_Storage;                                                  // Indicates that this partition is for adopted storage (android_expand)
+        bool Is_Non_Emu_Storage;                                                  // Indicates that this partition is the non-emulated storage (for legacy android devices)
+        bool Migrate_To_Emu_Storage;                                              // Indicates that the non-emulated storage must be restored onto the emulated storage.
 	bool SlotSelect;                                                          // Partition has A/B slots
 	TWExclude backup_exclusions;                                              // Exclusions for file based backups
 	TWExclude wipe_exclusions;                                                // Exclusions for file based wipes (data/media devices only)
@@ -250,7 +253,7 @@ public:
 	TWPartition* Find_Partition_By_Path(string Path);                         // Returns a pointer to a partition based on path
 	int Check_Backup_Name(bool Display_Error);                                // Checks the current backup name to ensure that it is valid
 	int Run_Backup(bool adbbackup, bool backup_media);                        // Initiates a backup in the current storage
-	int Run_Restore(const string& Restore_Name, bool restore_media);          // Restores a backup
+	int Run_Restore(const string& Restore_Name, bool restore_media, bool migrate_media);          // Restores a backup
 	bool Write_ADB_Stream_Header(uint64_t partition_count);                   // Write ADB header over twrpbu FIFO
 	bool Write_ADB_Stream_Trailer();                                          // Write ADB trailer over twrpbu FIFO
 	void Set_Restore_Files(string Restore_Name);                              // Used to gather a list of available backup partitions for the user to select for a restore

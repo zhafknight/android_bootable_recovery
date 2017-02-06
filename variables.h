@@ -72,6 +72,7 @@
 #define TW_SKIP_MD5_CHECK_VAR       "tw_skip_md5_check"
 #define TW_RESTORE_MEDIA_VAR        "tw_restore_media"
 #define TW_BACKUP_MEDIA_VAR         "tw_backup_media"
+#define TW_MIGRATE_MEDIA_VAR        "tw_migrate_media"
 
 
 #define TW_SKIP_MD5_GENERATE_VAR    "tw_skip_md5_generate"

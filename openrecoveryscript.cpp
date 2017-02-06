@@ -289,7 +289,7 @@ int OpenRecoveryScript::run_script_file(void) {
 				if (is_encrypted) {
 					gui_err("ors_encrypt_restore_err=Unable to use OpenRecoveryScript to restore an encrypted backup.");
 					ret_val = 1;
-				} else if (!PartitionManager.Run_Restore(folder_path, false))
+				} else if (!PartitionManager.Run_Restore(folder_path, false, false))
 					ret_val = 1;
 				else
 					gui_msg("done=Done.");
