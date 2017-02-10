@@ -181,6 +181,8 @@ const struct flag_list tw_flags[] = {
 	{ 0,                        0 },
 };
 
+#define MAX_LEN_SINGLE_LINE     120
+
 TWPartition::TWPartition() {
 	Can_Be_Mounted = false;
 	Can_Be_Wiped = false;
@@ -2490,8 +2492,39 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 	else
 		ret = true;
 	if (Is_Non_Emu_Storage && ret && part_settings->migrate_media) {
-		//Remove storage.xml so the ROM determines the storage-mode (emulated or non-emulated)
-		remove("/data/system/storage.xml");
+		const char fileOrig[32] = "/data/system/storage.xml";
+		const char fileRepl[32] = "/data/system/storage.xml.tmp";
+		const char text2find[80] = "primaryStorageUuid=\"primary_physical\"";
+		const char text2repl[80] = "";
+
+		char buffer[MAX_LEN_SINGLE_LINE+2];
+		char *buff_ptr, *find_ptr;
+		FILE *fp1, *fp2;
+		size_t find_len = strlen(text2find);
+
+		fp1 = fopen(fileOrig, "r");
+		fp2 = fopen(fileRepl, "w");
+
+		while(fgets(buffer, MAX_LEN_SINGLE_LINE + 2, fp1))
+		{
+			buff_ptr = buffer;
+			while ((find_ptr = strstr(buff_ptr, text2find)))
+			{
+			    while(buff_ptr < find_ptr)
+				fputc((int)*buff_ptr++, fp2);
+
+			    fputs(text2repl, fp2);
+
+			    buff_ptr += find_len;
+			}
+			fputs(buff_ptr, fp2);
+		}
+
+		fclose(fp2);
+		fclose(fp1);
+
+		remove(fileOrig);
+		rename(fileRepl, fileOrig);
 	}
 #ifdef HAVE_CAPABILITIES
 	// Restore capabilities to the run-as binary
