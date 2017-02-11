@@ -213,7 +213,7 @@ ifneq (,$(filter $(PLATFORM_SDK_VERSION), 21 22 23))
     LOCAL_WHOLE_STATIC_LIBRARIES := $(patsubst %,libtoolbox_%,$(BSD_TOOLS))
 endif
 
-ifneq (,$(filter $(PLATFORM_SDK_VERSION), 23 24))
+ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 23; echo $$?),0)
     # Rule to make getprop and setprop in M trees where toybox normally
     # provides these tools. Toybox does not allow for easy dynamic
     # configuration, so we would have to include the entire toybox binary
