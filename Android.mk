@@ -489,8 +489,11 @@ include $(CLEAR_VARS)
 # Create busybox symlinks... gzip and gunzip are excluded because those need to link to pigz instead
 BUSYBOX_LINKS := $(shell cat external/busybox/busybox-full.links)
 exclude := tune2fs mke2fs mkdosfs mkfs.vfat gzip gunzip
-ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 24; echo $$?),0)
-    exclude += sh
+
+ifneq ($(TW_USE_BUSYBOX_SH), true)
+    ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 24; echo $$?),0)
+        exclude += sh
+    endif
 endif
 
 # Having /sbin/modprobe present on 32 bit devices with can cause a massive
