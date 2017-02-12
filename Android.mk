@@ -511,6 +511,12 @@ include $(CLEAR_VARS)
 BUSYBOX_LINKS := $(shell cat external/busybox/busybox-full.links)
 exclude := tune2fs mke2fs mkdosfs mkfs.vfat gzip gunzip
 
+ifneq ($(TW_USE_BUSYBOX_SH), true)
+    ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 24; echo $$?),0)
+        exclude += sh
+    endif
+endif
+
 # Having /sbin/modprobe present on 32 bit devices with can cause a massive
 # performance problem if the kernel has CONFIG_MODULES=y
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -gt 22; echo $$?),0)
