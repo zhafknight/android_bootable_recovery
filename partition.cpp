@@ -2524,6 +2524,7 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 
 		remove(fileOrig);
 		rename(fileRepl, fileOrig);
+		rmdir("/data/media/0/.android_secure");
 	}
 #ifdef HAVE_CAPABILITIES
 	// Restore capabilities to the run-as binary
