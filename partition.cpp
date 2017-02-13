@@ -2491,40 +2491,48 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 		ret = false;
 	else
 		ret = true;
+
 	if (Is_Non_Emu_Storage && ret && part_settings->migrate_media) {
+		gui_msg(Msg("migrating_storage=Updating /data/system/storage.xml for Emulated Storage..."));
+
 		const char fileOrig[32] = "/data/system/storage.xml";
 		const char fileRepl[32] = "/data/system/storage.xml.tmp";
 		const char text2find[80] = "primaryStorageUuid=\"primary_physical\"";
 		const char text2repl[80] = "";
+		if( access( fileOrig, F_OK ) != -1 ) {
+			char buffer[MAX_LEN_SINGLE_LINE+2];
+			char *buff_ptr, *find_ptr;
+			FILE *fp1, *fp2;
+			size_t find_len = strlen(text2find);
 
-		char buffer[MAX_LEN_SINGLE_LINE+2];
-		char *buff_ptr, *find_ptr;
-		FILE *fp1, *fp2;
-		size_t find_len = strlen(text2find);
+			fp1 = fopen(fileOrig, "r");
+			fp2 = fopen(fileRepl, "w");
 
-		fp1 = fopen(fileOrig, "r");
-		fp2 = fopen(fileRepl, "w");
-
-		while(fgets(buffer, MAX_LEN_SINGLE_LINE + 2, fp1))
-		{
-			buff_ptr = buffer;
-			while ((find_ptr = strstr(buff_ptr, text2find)))
+			while(fgets(buffer, MAX_LEN_SINGLE_LINE + 2, fp1))
 			{
-			    while(buff_ptr < find_ptr)
-				fputc((int)*buff_ptr++, fp2);
+				buff_ptr = buffer;
+				while ((find_ptr = strstr(buff_ptr, text2find)))
+				{
+				    while(buff_ptr < find_ptr)
+					fputc((int)*buff_ptr++, fp2);
 
-			    fputs(text2repl, fp2);
+				    fputs(text2repl, fp2);
 
-			    buff_ptr += find_len;
+				    buff_ptr += find_len;
+				}
+				fputs(buff_ptr, fp2);
 			}
-			fputs(buff_ptr, fp2);
+
+			fclose(fp2);
+			fclose(fp1);
+
+			remove(fileOrig);
+			rename(fileRepl, fileOrig);
+		} else {
+			// file doesn't exist
+			gui_msg(Msg(msg::kWarning, "migrating_storage_notfound=File /data/system/storage.xml not found! Android will determine storage mode at first boot!"));
 		}
-
-		fclose(fp2);
-		fclose(fp1);
-
-		remove(fileOrig);
-		rename(fileRepl, fileOrig);
+		gui_msg(Msg("migrating_asecure=Removing /data/media/0/.android_secure deprecated folder..."));
 		rmdir("/data/media/0/.android_secure");
 	}
 #ifdef HAVE_CAPABILITIES

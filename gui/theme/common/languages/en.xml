@@ -258,6 +258,9 @@
 		<string name="restore_media">Restore /data/media</string>
 		<string name="migrate_media">Migrate non-emulated storage</string>
 		<string name="migrating">Migrating {1} to /data/media/0...</string>
+		<string name="migrating_storage">Updating /data/system/storage.xml for Emulated Storage...</string>
+		<string name="migrating_storage_notfound">File /data/system/storage.xml not found! Android will determine storage mode at first boot!</string>
+		<string name="migrating_asecure">Removing /data/media/0/.android_secure deprecated folder...</string>
 		<string name="restore_complete">Restore Complete</string>
 		<string name="swipe_restore">Swipe to Restore</string>
 		<string name="swipe_restore_s">   Restore</string>
