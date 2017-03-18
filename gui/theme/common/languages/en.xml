@@ -19,8 +19,9 @@
 		<string name="recovery">Recovery</string>
 		<string name="cache">Cache</string>
 		<string name="data">Data</string>
+		<string name="data_backup">Data (excl. storage)</string>
 		<string name="sdcard">SDCard</string>
-		<string name="internal">Emulated Storage</string>
+		<string name="internal">Internal Storage</string>
 		<string name="microsd">Micro SDCard</string>
 		<string name="usbotg">USB OTG</string>
 		<string name="android_secure">Android Secure</string>
@@ -460,6 +461,7 @@
 		<string name="decrypt_data_failed_pattern">Pattern failed, please try again!</string>
 		<string name="decrypt_data_enter_pattern">Enter Pattern.</string>
 		<string name="decrypt_data_trying">Trying Decryption</string>
+		<string name="decrypt_data_vold_os_missing">Missing files needed for vold decrypt: {1}</string>
 		<string name="term_hdr">Terminal Command</string>
 		<string name="term_s_hdr">Terminal</string>
 		<string name="term_kill_btn">KILL</string>
@@ -603,6 +605,7 @@
 		<string name="wiping_data">Wiping data without wiping /data/media ...</string>
 		<string name="backing_up">Backing up {1}...</string>
 		<string name="backing_up_including_media">Backing up {1} including media...</string>
+		<string name="backup_storage_warning">Backups of {1} do not include any files in internal storage such as pictures or downloads.</string>
 		<string name="backing">Backing Up</string>
 		<string name="backup_size">Backup file size for '{1}' is 0 bytes.</string>
 		<string name="datamedia_fs_restore">WARNING: This /data backup was made with {1} file system! The backup may not boot unless you change back to {1}.</string>
