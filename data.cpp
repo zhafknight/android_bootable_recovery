@@ -693,7 +693,7 @@ void DataManager::SetDefaultValues()
 	string Lun_File_str = CUSTOM_LUN_FILE;
 	size_t found = Lun_File_str.find("%");
 	if (found != string::npos) {
-		sprintf(lun_file, CUSTOM_LUN_FILE, 0);
+		sprintf(lun_file, "/sys/class/android_usb/android0/f_mass_storage/lun%d/file", 0);
 		Lun_File_str = lun_file;
 	}
 	if (!TWFunc::Path_Exists(Lun_File_str)) {
