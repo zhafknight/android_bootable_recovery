@@ -80,7 +80,7 @@ mtd_scan_partitions()
 
     if (g_mtd_state.partitions == NULL) {
         const int nump = 32;
-        MtdPartition *partitions = malloc(nump * sizeof(*partitions));
+        MtdPartition *partitions = (MtdPartition*)malloc(nump * sizeof(*partitions));
         if (partitions == NULL) {
             errno = ENOMEM;
             return -1;
@@ -270,7 +270,7 @@ MtdReadContext *mtd_read_partition(const MtdPartition *partition)
     MtdReadContext *ctx = (MtdReadContext*) malloc(sizeof(MtdReadContext));
     if (ctx == NULL) return NULL;
 
-    ctx->buffer = malloc(partition->erase_size);
+    ctx->buffer = (char*)malloc(partition->erase_size);
     if (ctx->buffer == NULL) {
         free(ctx);
         return NULL;
@@ -385,7 +385,7 @@ MtdWriteContext *mtd_write_partition(const MtdPartition *partition)
     ctx->bad_block_alloc = 0;
     ctx->bad_block_count = 0;
 
-    ctx->buffer = malloc(partition->erase_size);
+    ctx->buffer = (char*)malloc(partition->erase_size);
     if (ctx->buffer == NULL) {
         free(ctx);
         return NULL;
@@ -408,7 +408,7 @@ MtdWriteContext *mtd_write_partition(const MtdPartition *partition)
 static void add_bad_block_offset(MtdWriteContext *ctx, off_t pos) {
     if (ctx->bad_block_count + 1 > ctx->bad_block_alloc) {
         ctx->bad_block_alloc = (ctx->bad_block_alloc*2) + 1;
-        ctx->bad_block_offsets = realloc(ctx->bad_block_offsets,
+        ctx->bad_block_offsets = (off_t*)realloc(ctx->bad_block_offsets,
                                          ctx->bad_block_alloc * sizeof(off_t));
     }
     ctx->bad_block_offsets[ctx->bad_block_count++] = pos;
@@ -643,7 +643,7 @@ int cmd_mtd_restore_raw_partition(const char *partition_name, const char *filena
     }
 
     int success = 1;
-    char* buffer = malloc(BUFSIZ);
+    char* buffer = (char*)malloc(BUFSIZ);
     int read;
     while (success && (read = fread(buffer, 1, BUFSIZ, f)) > 0) {
         int wrote = mtd_write_data(ctx, buffer, read);

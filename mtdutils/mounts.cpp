@@ -24,13 +24,6 @@
 
 #include "mounts.h"
 
-struct MountedVolume {
-    const char *device;
-    const char *mount_point;
-    const char *filesystem;
-    const char *flags;
-};
-
 typedef struct {
     MountedVolume *volumes;
     int volumes_allocd;
@@ -67,7 +60,7 @@ scan_mounted_volumes()
 
     if (g_mounts_state.volumes == NULL) {
         const int numv = 32;
-        MountedVolume *volumes = malloc(numv * sizeof(*volumes));
+        MountedVolume *volumes = (MountedVolume*)malloc(numv * sizeof(*volumes));
         if (volumes == NULL) {
             errno = ENOMEM;
             return -1;

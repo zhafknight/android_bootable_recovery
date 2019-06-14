@@ -234,7 +234,7 @@ mmc_scan_partitions() {
 
     if (g_mmc_state.partitions == NULL) {
         const int nump = MAX_PARTITIONS;
-        MmcPartition *partitions = malloc(nump * sizeof(*partitions));
+        MmcPartition *partitions = (MmcPartition*)malloc(nump * sizeof(*partitions));
         if (partitions == NULL) {
             errno = ENOMEM;
             return -1;
